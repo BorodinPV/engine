@@ -92,22 +92,43 @@ void main()
         float cloud2 = smoothstep(0.48, 0.72, n2);
 
         // Combine layers: large clouds dominate, wisps add detail
-        float density = max(cloud1, cloud2 * 0.5);
+        float density = max(cloud1, cloud2 * 0.6);
 
         // Fade near horizon
         float horizonFade = smoothstep(0.01, 0.2, dir.y);
         density *= horizonFade;
 
-        // Cloud color: sun-lit with warm/cool variation
+        // --- Volumetric cloud shading ---
+        // Sun direction relative to cloud point
         float sunDot = max(dot(dir, sdir), 0.0);
         float sunHeight = max(sdir.y, 0.1);
-        vec3 cloudBright = mix(vec3(0.85, 0.87, 0.92), sunColor, sunHeight * 0.3);
-        vec3 cloudShadow = vec3(0.55, 0.58, 0.68);
-        // Silver lining near sun
-        cloudBright += sunColor * 0.2 * pow(sunDot, 2.0);
-        vec3 cloudColor = mix(cloudShadow, cloudBright, 0.6 + 0.4 * sunDot);
 
-        linear = mix(linear, cloudColor, density * 0.9);
+        // Internal density gradient: thicker center → darker base, brighter top
+        float innerDensity = smoothstep(0.35, 0.7, n1);
+        float topLight = 1.0 - innerDensity * 0.4;
+
+        // Sun illumination: bright on sun-facing side
+        float sunIllumination = pow(sunDot, 1.5) * sunHeight;
+
+        // Cloud base color (dark grey-blue underside)
+        vec3 cloudBase = vec3(0.45, 0.48, 0.55);
+        // Cloud top color (bright white, warm from sun)
+        vec3 cloudTop = mix(vec3(0.92, 0.93, 0.96), sunColor, sunHeight * 0.25);
+
+        // Sub-surface scattering: light bleeds through thin edges
+        float sss = pow(sunDot, 4.0) * (1.0 - innerDensity) * 0.35;
+        vec3 sssColor = sunColor * sss;
+
+        // Silver lining at cloud edges near sun
+        float edge = smoothstep(0.0, 0.3, density) * (1.0 - smoothstep(0.3, 0.8, density));
+        float lining = edge * pow(sunDot, 2.0) * 0.5;
+
+        // Final cloud color: gradient from base (dark) to top (bright) + sun effects
+        vec3 cloudColor = mix(cloudBase, cloudTop, topLight + sunIllumination * 0.4);
+        cloudColor += sssColor;
+        cloudColor += sunColor * lining;
+
+        linear = mix(linear, cloudColor, density * 0.92);
     }
 
     FragColor = vec4(tonemapDisplay(linear, exposure), 1.0);
