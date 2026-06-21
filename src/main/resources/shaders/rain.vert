@@ -25,8 +25,8 @@ void main()
     else if (vertId == 4) { side =  0.5; vert = 0.0; }  // TR
     else                  { side =  0.5; vert = -1.0; } // BR
 
-    float width = 0.05;
-    float streakLen = 0.8;
+    float width = 0.0125;
+    float streakLen = 0.2;
 
     vec3 pos = aPos;
     pos += camRight * side * width;

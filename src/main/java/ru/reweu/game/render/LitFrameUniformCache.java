@@ -329,7 +329,7 @@ public final class LitFrameUniformCache {
             glUniform1i(fogEnabled, fogActive ? 1 : 0);
         }
         if (fogDensity != -1) {
-            glUniform1f(fogDensity, 0.15f);
+            glUniform1f(fogDensity, 0.01f);
         }
         if (fogColor != -1) {
             glUniform3f(fogColor, 0.6f, 0.65f, 0.72f);
