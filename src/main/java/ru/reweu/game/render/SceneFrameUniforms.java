@@ -26,7 +26,6 @@ public final class SceneFrameUniforms {
         BrdfLutTexture brdfLut,
         EnvironmentIbl environmentIbl,
         boolean shadowSamplingEnabled,
-        float textureScale,
         float farPlane,
         LitFrameUniformCache.ShadowUniformConfig shadowConfig
     ) {
@@ -45,7 +44,6 @@ public final class SceneFrameUniforms {
             brdfLut,
             environmentIbl,
             shadowSamplingEnabled,
-            textureScale,
             farPlane,
             shadowConfig
         );

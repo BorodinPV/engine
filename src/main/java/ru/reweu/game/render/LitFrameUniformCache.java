@@ -56,7 +56,6 @@ public final class LitFrameUniformCache {
     private final int ambientHemiScale;
     private final int ambientHemiHemi;
     private final int exposure;
-    private final int textureScale;
     private final int view;
     private final int projection;
     private final int model;
@@ -101,7 +100,6 @@ public final class LitFrameUniformCache {
         ambientHemiScale = shader.uniformLocation("ambientHemiScale");
         ambientHemiHemi = shader.uniformLocation("ambientHemiHemi");
         exposure = shader.uniformLocation("exposure");
-        textureScale = shader.uniformLocation("textureScale");
         view = shader.uniformLocation("view");
         projection = shader.uniformLocation("projection");
         model = shader.uniformLocation("model");
@@ -148,13 +146,12 @@ public final class LitFrameUniformCache {
         BrdfLutTexture brdfLutTexture,
         EnvironmentIbl environmentIbl,
         boolean shadowSamplingEnabled,
-        float textureScaleValue,
         float farPlane,
         ShadowUniformConfig shadowConfig
     ) {
         shader.use();
         bindLightUniforms(lit);
-        bindMatrices(shader, viewMatrix, projectionMatrix, textureScaleValue);
+        bindMatrices(shader, viewMatrix, projectionMatrix);
         bindShadowUniforms(shader, shadowMap, farPlane, shadowSamplingEnabled, shadowConfig);
         bindTextures(brdfLutTexture, environmentIbl, lit);
     }
@@ -212,11 +209,7 @@ public final class LitFrameUniformCache {
         }
     }
 
-    private void bindMatrices(ShaderProgram shader, Matrix4f viewMatrix, Matrix4f projectionMatrix,
-                              float textureScaleValue) {
-        if (textureScale != -1) {
-            glUniform1f(textureScale, textureScaleValue);
-        }
+    private void bindMatrices(ShaderProgram shader, Matrix4f viewMatrix, Matrix4f projectionMatrix) {
         if (view != -1) {
             shader.setUniformMat4At(view, viewMatrix);
         }

@@ -17,7 +17,6 @@ public final class WorldRenderer implements LitFrameServices {
     private final LitFrameUniformCache worldUniforms;
     private LitFrameUniformCache gltfUniforms;
 
-    private float textureScale = 4.5f;
     private float farPlane = 1000f;
     private LitFrameUniformCache.ShadowUniformConfig shadowConfig =
         new LitFrameUniformCache.ShadowUniformConfig(1f, 1.38f, 0.1f, false, false);
@@ -38,9 +37,8 @@ public final class WorldRenderer implements LitFrameServices {
     /**
      * Устанавливает параметры, специфичные для приложения (передаются из game-shader каждый кадр).
      */
-    public void setAppConfig(float textureScale, float farPlane,
+    public void setAppConfig(float farPlane,
                              LitFrameUniformCache.ShadowUniformConfig shadowConfig) {
-        this.textureScale = textureScale;
         this.farPlane = farPlane;
         this.shadowConfig = shadowConfig;
     }
@@ -83,7 +81,6 @@ public final class WorldRenderer implements LitFrameServices {
             brdfLut,
             environmentIbl,
             shadowSamplingEnabled,
-            textureScale,
             farPlane,
             shadowConfig
         );
