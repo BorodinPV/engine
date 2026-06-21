@@ -7,10 +7,6 @@ import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glIsEnabled;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 import static org.lwjgl.opengl.GL20.glUniform1f;
 import static org.lwjgl.opengl.GL20.glUniform3f;
@@ -20,11 +16,10 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import ru.reweu.game.render.ibl.EnvironmentIbl;
 
 /**
- * Процедурное небо (градиент + диск солнца) на полноэкранном треугольнике.
- * Направление луча на пиксель — через {@code invProjection} и {@code invView}, без швов куба.
+ * Процедурное небо (гемисферный градиент + диск солнца) на полноэкранном треугольнике.
+ * Направление луча на пиксель — через {@code invProjection} и {@code invView}.
  */
 public final class SkyRenderer {
 
@@ -46,9 +41,7 @@ public final class SkyRenderer {
         ShaderProgram sky,
         Matrix4f view,
         Matrix4f projection,
-        EnvironmentIbl environmentIbl,
-        LightingFrame lit,
-        boolean useIblEnvironment
+        LightingFrame lit
     ) {
         tmpInvProj.set(projection).invert();
         tmpInvView.set(view).invert();
@@ -57,16 +50,6 @@ public final class SkyRenderer {
         sky.use();
         sky.setUniform("invProjection", tmpInvProj);
         sky.setUniform("invView", tmpInvView);
-
-        boolean useEnvSky = useIblEnvironment && environmentIbl != null;
-        sky.setUniform("u_useEnvSky", useEnvSky ? 1 : 0);
-        if (useEnvSky) {
-            int unit = EnvironmentIbl.PREFILTER_UNIT;
-            glActiveTexture(GL_TEXTURE0 + unit);
-            glBindTexture(GL_TEXTURE_CUBE_MAP, environmentIbl.getPrefilterMap());
-            sky.setUniform("u_envSky", unit);
-            sky.setUniform("u_iblIntensity", lit.iblIntensity());
-        }
 
         Vector3f sd = lit.sunDirection();
         int sunDirLoc = ShaderProgram.uniformLocation(pid, "sunDirection");
