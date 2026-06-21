@@ -27,7 +27,8 @@ public final class SceneFrameUniforms {
         EnvironmentIbl environmentIbl,
         boolean shadowSamplingEnabled,
         float farPlane,
-        LitFrameUniformCache.ShadowUniformConfig shadowConfig
+        LitFrameUniformCache.ShadowUniformConfig shadowConfig,
+        boolean fogActive
     ) {
         long key = ((long) shaderProgram.getProgramId() << 32) | (worldShaderProgramId & 0xffffffffL);
         LitFrameUniformCache cache = AD_HOC_CACHE.computeIfAbsent(key, k ->
@@ -45,7 +46,8 @@ public final class SceneFrameUniforms {
             environmentIbl,
             shadowSamplingEnabled,
             farPlane,
-            shadowConfig
+            shadowConfig,
+            fogActive
         );
     }
 }

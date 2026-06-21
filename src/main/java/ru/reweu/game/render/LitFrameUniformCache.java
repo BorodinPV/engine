@@ -77,6 +77,9 @@ public final class LitFrameUniformCache {
     private final int emissiveBoost;
     private final int[] lightSpaceMatrix = new int[4];
     private final int cascadeSplitDistance;
+    private final int fogEnabled;
+    private final int fogDensity;
+    private final int fogColor;
 
     private LitFrameUniformCache(ShaderProgram shader, int worldProgramId) {
         this.programId = shader.getProgramId();
@@ -123,6 +126,9 @@ public final class LitFrameUniformCache {
             lightSpaceMatrix[i] = shader.uniformLocation("lightSpaceMatrix[" + i + "]");
         }
         cascadeSplitDistance = shader.uniformLocation("cascadeSplitDistance[0]");
+        fogEnabled = shader.uniformLocation("u_fogEnabled");
+        fogDensity = shader.uniformLocation("u_fogDensity");
+        fogColor = shader.uniformLocation("u_fogColor");
     }
 
     public static LitFrameUniformCache forWorld(ShaderProgram shader) {
@@ -147,13 +153,15 @@ public final class LitFrameUniformCache {
         EnvironmentIbl environmentIbl,
         boolean shadowSamplingEnabled,
         float farPlane,
-        ShadowUniformConfig shadowConfig
+        ShadowUniformConfig shadowConfig,
+        boolean fogActive
     ) {
         shader.use();
         bindLightUniforms(lit);
         bindMatrices(shader, viewMatrix, projectionMatrix);
         bindShadowUniforms(shader, shadowMap, farPlane, shadowSamplingEnabled, shadowConfig);
         bindTextures(brdfLutTexture, environmentIbl, lit);
+        bindFog(shader, fogActive);
     }
 
     private void bindLightUniforms(LightingFrame lit) {
@@ -313,6 +321,18 @@ public final class LitFrameUniformCache {
 
         if (emissiveBoost != -1) {
             glUniform1f(emissiveBoost, lit.emissiveBoost());
+        }
+    }
+
+    private void bindFog(ShaderProgram shader, boolean fogActive) {
+        if (fogEnabled != -1) {
+            glUniform1i(fogEnabled, fogActive ? 1 : 0);
+        }
+        if (fogDensity != -1) {
+            glUniform1f(fogDensity, 0.15f);
+        }
+        if (fogColor != -1) {
+            glUniform3f(fogColor, 0.6f, 0.65f, 0.72f);
         }
     }
 }

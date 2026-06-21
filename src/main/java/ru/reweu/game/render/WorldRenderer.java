@@ -18,6 +18,7 @@ public final class WorldRenderer implements LitFrameServices {
     private LitFrameUniformCache gltfUniforms;
 
     private float farPlane = 1000f;
+    private boolean fogActive = false;
     private LitFrameUniformCache.ShadowUniformConfig shadowConfig =
         new LitFrameUniformCache.ShadowUniformConfig(1f, 1.38f, 0.1f, false, false);
 
@@ -38,9 +39,15 @@ public final class WorldRenderer implements LitFrameServices {
      * Устанавливает параметры, специфичные для приложения (передаются из game-shader каждый кадр).
      */
     public void setAppConfig(float farPlane,
-                             LitFrameUniformCache.ShadowUniformConfig shadowConfig) {
+                             LitFrameUniformCache.ShadowUniformConfig shadowConfig,
+                             boolean fogActive) {
         this.farPlane = farPlane;
         this.shadowConfig = shadowConfig;
+        this.fogActive = fogActive;
+    }
+
+    public void setFogActive(boolean fogActive) {
+        this.fogActive = fogActive;
     }
 
     public ShaderProgram getWorldShaderProgram() {
@@ -82,7 +89,8 @@ public final class WorldRenderer implements LitFrameServices {
             environmentIbl,
             shadowSamplingEnabled,
             farPlane,
-            shadowConfig
+            shadowConfig,
+            fogActive
         );
     }
 
