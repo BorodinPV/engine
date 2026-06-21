@@ -41,7 +41,8 @@ public final class SkyRenderer {
         ShaderProgram sky,
         Matrix4f view,
         Matrix4f projection,
-        LightingFrame lit
+        LightingFrame lit,
+        float time
     ) {
         tmpInvProj.set(projection).invert();
         tmpInvView.set(view).invert();
@@ -82,6 +83,10 @@ public final class SkyRenderer {
         int sunDiscLoc = ShaderProgram.uniformLocation(pid, "sunDiscScale");
         if (sunDiscLoc != -1) {
             glUniform1f(sunDiscLoc, lit.sunDiscScale());
+        }
+        int timeLoc = ShaderProgram.uniformLocation(pid, "u_time");
+        if (timeLoc != -1) {
+            glUniform1f(timeLoc, time);
         }
 
         boolean cullWasOn = glIsEnabled(GL_CULL_FACE);
